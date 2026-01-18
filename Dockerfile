@@ -4,18 +4,17 @@ FROM eclipse-temurin:21-jdk-jammy
 # Set working directory
 WORKDIR /app
 
-# Copy Maven wrapper and pom.xml first (for caching)
-COPY mvnw pom.xml ./
-COPY .mvn .mvn
+# Copy pom.xml first (for caching)
+COPY pom.xml ./
 
-# Copy the rest of your source code
+# Copy source code
 COPY src src
 
-# Make Maven wrapper executable
-RUN chmod +x mvnw
+# Install Maven (inside container)
+RUN apt-get update && apt-get install -y maven
 
 # Build the app (skip tests to make it faster)
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 # Expose port your app uses
 EXPOSE 8081
